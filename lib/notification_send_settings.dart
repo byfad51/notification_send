@@ -149,43 +149,13 @@ Future<void> setting() async {
   );
 }
 
-class MyNotificationSenderSettings extends StatefulWidget {
-  const MyNotificationSenderSettings(
-    this.notificationAppLaunchDetails, {
-    Key? key,
-  }) : super(key: key);
-
-  static const String routeName = '/';
-
-  final NotificationAppLaunchDetails? notificationAppLaunchDetails;
-
-  bool get didNotificationLaunchApp =>
-      notificationAppLaunchDetails?.didNotificationLaunchApp ?? false;
-
-  @override
-  _HomePageState createState() => _HomePageState();
-}
-
-class _HomePageState extends State<MyNotificationSenderSettings> {
-  final TextEditingController _linuxIconPathController =
-      TextEditingController();
-
-  bool _notificationsEnabled = false;
-
-  @override
-  void initState() {
-    super.initState();
-    getInitial();
-  }
-  bool initialStatus= false;
+class NotificationSender {
 
  getInitial() async{
      _isAndroidPermissionGranted();
      _requestPermissions();
-     _configureDidReceiveLocalNotificationSubject();
-     _configureSelectNotificationSubject();
-}
 
+}
 
   Future<void> _isAndroidPermissionGranted() async {
     if (Platform.isAndroid) {
@@ -194,10 +164,6 @@ class _HomePageState extends State<MyNotificationSenderSettings> {
                   AndroidFlutterLocalNotificationsPlugin>()
               ?.areNotificationsEnabled() ??
           false;
-
-      setState(() {
-        _notificationsEnabled = granted;
-      });
     }
   }
 
@@ -224,87 +190,11 @@ class _HomePageState extends State<MyNotificationSenderSettings> {
           flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
               AndroidFlutterLocalNotificationsPlugin>();
 
-      final bool? grantedNotificationPermission =
+
           await androidImplementation?.requestPermission();
 
-      setState(() {
-        _notificationsEnabled = grantedNotificationPermission ?? false;
-      });
     }
   }
-
-  void _configureDidReceiveLocalNotificationSubject() {
-    didReceiveLocalNotificationStream.stream
-        .listen((ReceivedNotification receivedNotification) async {
-      await showDialog(
-        context: context,
-        builder: (BuildContext context) => CupertinoAlertDialog(
-          title: receivedNotification.title != null
-              ? Text(receivedNotification.title!)
-              : null,
-          content: receivedNotification.body != null
-              ? Text(receivedNotification.body!)
-              : null,
-          actions: <Widget>[
-            CupertinoDialogAction(
-              isDefaultAction: true,
-              onPressed: () async {
-                Navigator.of(context, rootNavigator: true).pop();
-                await Navigator.of(context).push(
-                  MaterialPageRoute<void>(
-                      builder: (BuildContext context) =>
-                          Text(receivedNotification.payload ?? "fsdfsdf")),
-                );
-              },
-              child: const Text('Ok'),
-            )
-          ],
-        ),
-      );
-    });
-  }
-
-  void _configureSelectNotificationSubject() {
-    selectNotificationStream.stream.listen((String? payload) async {
-      await Navigator.of(context).push(MaterialPageRoute<void>(
-        builder: (BuildContext context) => Text(payload ?? "aaa"),
-      ));
-    });
-  }
-
-  @override
-  void dispose() {
-    didReceiveLocalNotificationStream.close();
-    selectNotificationStream.close();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          title: const Text('Bildirim Ayarları'),
-        ),
-        body: SingleChildScrollView(
-            child: Container(
-          margin: EdgeInsets.all(20),
-          child: Column(
-            children: [
-              Text(
-                "Bildirim ayarını aktif etminiz halinde uygulama arka planda çalışır ve alarm durumları için size bildirim gönderir.",
-                textAlign: TextAlign.center,
-              ),
-
-              Text(
-                "Bildirimlerin gelmesi için izin vermiş olmanız gerekmektedir.",
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-        )),
-      );
-
-
-
   /*Future<void> _showNotificationWithTag() async {
     const AndroidNotificationDetails androidNotificationDetails =
         AndroidNotificationDetails('2', 'Envest',

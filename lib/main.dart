@@ -1,10 +1,11 @@
 import 'package:email/notification_controller.dart';
+import 'package:email/notification_send_settings.dart';
 import 'package:flutter/material.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-
+  await setting();
+  NotificationSender().getInitial();
   runApp(const MyApp());
 }
 
@@ -39,6 +40,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
 NotificationController notificationController = NotificationController();
   void gonder(){
+
    // NotificationController().showNotification("tiasdadtle", "sadadads");
     notificationController.showNotification("123456", "basdody");
     notificationController.showNotification("t1234itle", "afdsad");
@@ -49,7 +51,8 @@ NotificationController notificationController = NotificationController();
       body: Center(
         child: Column(children: [
           Text("bildirim gönderici"),
-          ElevatedButton(onPressed: gonder, child: Text("gonder"))
+          ElevatedButton(onPressed: gonder, child: Text("gonder")),
+
         ],),
       ),
     );
